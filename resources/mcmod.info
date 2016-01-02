@@ -1,0 +1,14 @@
+[{
+    "modid": "$modid",
+	"name": "$name",
+	"description": "$description",
+	"version": "$version",
+	"mcversion": "$mcversion",
+	"url": "",
+	"updateUrl": "",
+	"authorList": ["Spartan322"],
+	"credits": "$credits",
+	"logoFile": "logo.png",
+	"screenshots": [],
+	"dependencies": []
+}]

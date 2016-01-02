@@ -1,0 +1,9 @@
+.gradle/
+.idea/
+.settings/
+.project
+.classpath
+bin/
+classes/
+minecraft/
+Banner1710.iml

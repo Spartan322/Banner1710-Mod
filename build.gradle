@@ -1,0 +1,97 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		maven {
+			name = "forge"
+			url = "http://files.minecraftforge.net/maven"
+		}
+		maven {
+			name = "sonatype"
+			url = "https://oss.sonatype.org/content/repositories/snapshots/"
+		}
+	}
+	dependencies {
+		classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+
+		classpath fileTree(dir: 'libs', include: '*.jar')
+	}
+}
+
+apply plugin: 'idea'
+idea {
+	module {
+		inheritOutputDirs = true
+	}
+}
+
+apply plugin: 'forge'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+ext.configFile = file "mod.prop"
+configFile.withReader {
+	// Load config. Can be referenced as config
+	def prop = new Properties()
+	prop.load(it)
+	ext.config = new ConfigSlurper().parse prop
+}
+
+version = config.mcversion+"-"+config.forgeversion+"F-"+config.modversion //"1.7.10-10.13.2.1230F-1.0.2R"
+group= "com.httymd" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = config.name
+
+minecraft {
+	version = config.mcversion+"-"+config.forgeversion //"1.7.10-10.13.2.1230"
+	runDir = "minecraft"
+}
+
+
+sourceSets {
+	main {
+		java { srcDir 'java' }
+		resources { srcDir 'resources' include('**') }
+	}
+}
+
+processResources
+{
+	// this will ensure that this task is redone when the versions change.
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+		// replace version and mcversion
+		expand 'version':config.modversion, 'mcversion':config.mcversion, 'modid':config.modid, 'description':config.description, 'credits':config.credits
+	}
+}
+
+dependencies {
+}
+
+
+task deobfJar(type: Jar) {
+	from sourceSets.main.output
+	classifier = 'deobf'
+	destinationDir = file 'releases/API'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.allSource
+	classifier = 'sources'
+	destinationDir = file 'releases/API'
+}
+
+jar {
+	//Place jar into distribution folder
+	destinationDir = file 'releases'
+	//Keep the jar as clean as possible
+	includeEmptyDirs = false
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+artifacts {
+	archives deobfJar
+	archives sourceJar
+	archives jar
+}
